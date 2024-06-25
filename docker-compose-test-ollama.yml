@@ -1,0 +1,93 @@
+version: '3.8'
+
+services:
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 9090:80
+    networks:
+      - ollama_net
+
+  ollama-00:
+    volumes:
+      - /mnt/md0/ollama_models:/root/.ollama
+    container_name: ollama-00
+    pull_policy: always
+    tty: true
+    restart: unless-stopped
+    image: ollama/ollama:latest
+    ports:
+      - 11435:11434
+    networks:
+      - ollama_net
+    
+
+  ollama-01:
+    volumes:
+      - /mnt/md0/ollama_models:/root/.ollama
+    container_name: ollama-01
+    pull_policy: always
+    tty: true
+    restart: unless-stopped
+    image: ollama/ollama:latest
+    ports:
+      - 11436:11434
+    networks:
+      - ollama_net
+
+  ollama-02:
+    volumes:
+      - /mnt/md0/ollama_models:/root/.ollama
+    container_name: ollama-02
+    pull_policy: always
+    tty: true
+    restart: unless-stopped
+    image: ollama/ollama:latest
+    ports:
+      - 11437:11434
+    networks:
+      - ollama_net
+
+  ollama-03:
+    volumes:
+      - /mnt/md0/ollama_models:/root/.ollama
+    container_name: ollama-03
+    pull_policy: always
+    tty: true
+    restart: unless-stopped
+    image: ollama/ollama:latest
+    ports:
+      - 11438:11434
+    networks:
+      - ollama_net
+
+  ollama-webui:
+    image: ghcr.io/ollama-webui/ollama-webui:main
+    container_name: ollama-webui
+    depends_on:
+      - nginx
+      - ollama-00
+      - ollama-01
+      - ollama-02
+      - ollama-03
+    ports:
+      - 3000:8080
+    environment:
+      - OLLAMA_API_BASE_URL=http://nginx:9090/api
+    # extra_hosts:
+    #   - host.docker.internal:host-gateway
+    restart: unless-stopped
+    networks:
+      - ollama_net
+
+networks:
+  ollama_net:
+    driver: bridge
+
+# volumes:
+#   ollama: {}
+#   ollama-webui: {}
